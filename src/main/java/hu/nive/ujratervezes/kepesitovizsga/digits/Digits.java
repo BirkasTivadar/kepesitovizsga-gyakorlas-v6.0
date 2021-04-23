@@ -1,4 +1,4 @@
-package hu.nive.ujratervezes.kepesitovizsga;
+package hu.nive.ujratervezes.kepesitovizsga.digits;
 
 public class Digits {
 
