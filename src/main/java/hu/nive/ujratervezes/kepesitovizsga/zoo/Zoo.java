@@ -1,8 +1,5 @@
 package hu.nive.ujratervezes.kepesitovizsga.zoo;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
-import org.flywaydb.core.Flyway;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,33 +50,34 @@ public class Zoo {
                 Connection conn = dataSource.getConnection();
                 PreparedStatement ps = conn.prepareStatement("SELECT animal_name, length_of_member, weight, animal_type FROM animals;")
         ) {
-            try (ResultSet rs = ps.executeQuery()) {
-                loadToAnimals(rs);
-            } catch (SQLException sqlException) {
-                throw new IllegalStateException("Cannot query", sqlException);
-            }
+            processResultSet(ps);
         } catch (SQLException sqlException) {
             throw new IllegalStateException("Connection failed", sqlException);
         }
     }
 
-    private void loadToAnimals(ResultSet rs) throws SQLException {
-        while (rs.next()) {
-            String name = rs.getString("animal_name");
-            int length = rs.getInt("length_of_member");
-            long weight = rs.getLong("weight");
-            String type = rs.getString("animal_type");
-            if (type.equalsIgnoreCase("lion")) {
-                animals.add(new Lion(name));
+    private void processResultSet(PreparedStatement ps) {
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                String name = rs.getString("animal_name");
+                int length = rs.getInt("length_of_member");
+                long weight = rs.getLong("weight");
+                String type = rs.getString("animal_type");
+                if (type.equalsIgnoreCase("lion")) {
+                    animals.add(new Lion(name));
+                }
+                if (type.equalsIgnoreCase("giraffe")) {
+                    animals.add(new Giraffe(name, length));
+                }
+                if (type.equalsIgnoreCase("elephant")) {
+                    animals.add(new Elephant(name, length, weight));
+                }
             }
-            if (type.equalsIgnoreCase("giraffe")) {
-                animals.add(new Giraffe(name, length));
-            }
-            if (type.equalsIgnoreCase("elephant")) {
-                animals.add(new Elephant(name, length, weight));
-            }
+        } catch (SQLException sqlException) {
+            throw new IllegalStateException("Cannot query", sqlException);
         }
     }
+
 
     public ZooAnimal findExactAnimal(ZooAnimal animal) {
         return findExactAnimalByName(animal.getName());
