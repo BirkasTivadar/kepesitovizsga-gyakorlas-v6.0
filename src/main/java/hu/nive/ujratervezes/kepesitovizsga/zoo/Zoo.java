@@ -1,10 +1,7 @@
 package hu.nive.ujratervezes.kepesitovizsga.zoo;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,16 +45,9 @@ public class Zoo {
     public void loadAnimals() {
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT animal_name, length_of_member, weight, animal_type FROM animals;")
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT animal_name, length_of_member, weight, animal_type FROM animals;")
         ) {
-            processResultSet(ps);
-        } catch (SQLException sqlException) {
-            throw new IllegalStateException("Connection failed", sqlException);
-        }
-    }
-
-    private void processResultSet(PreparedStatement ps) {
-        try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 String name = rs.getString("animal_name");
                 int length = rs.getInt("length_of_member");
@@ -74,10 +64,9 @@ public class Zoo {
                 }
             }
         } catch (SQLException sqlException) {
-            throw new IllegalStateException("Cannot query", sqlException);
+            throw new IllegalStateException("Connection failed", sqlException);
         }
     }
-
 
     public ZooAnimal findExactAnimal(ZooAnimal animal) {
         return findExactAnimalByName(animal.getName());
