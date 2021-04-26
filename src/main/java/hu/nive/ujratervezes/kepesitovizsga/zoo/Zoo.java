@@ -49,16 +49,20 @@ public class Zoo {
                 ResultSet rs = stmt.executeQuery("SELECT animal_name, length_of_member, weight, animal_type FROM animals;")
         ) {
             while (rs.next()) {
+
                 String name = rs.getString("animal_name");
                 int length = rs.getInt("length_of_member");
                 long weight = rs.getLong("weight");
                 String type = rs.getString("animal_type");
+
                 if (type.equalsIgnoreCase("lion")) {
                     animals.add(new Lion(name));
                 }
+
                 if (type.equalsIgnoreCase("giraffe")) {
                     animals.add(new Giraffe(name, length));
                 }
+
                 if (type.equalsIgnoreCase("elephant")) {
                     animals.add(new Elephant(name, length, weight));
                 }
